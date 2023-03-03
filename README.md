@@ -1,2 +1,2 @@
 # Tic-Tac-Toe-2023
-Retry the Tic Tac Toe project
+Redo the Tic Tac Toe project
