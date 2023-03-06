@@ -127,8 +127,8 @@ const GameController = (
   board.printBoard();
 
   const players = [
-    { name: playerOneName, marker: 'X' },
-    { name: playerTwoName, marker: 'O' },
+    { name: playerOneName, marker: 1 },
+    { name: playerTwoName, marker: 2 },
   ];
 
   let activePlayer = players[0];
@@ -169,11 +169,13 @@ const ScreenController = () => {
         cellEl.textContent = board[row][col].getValue();
         cellEl.dataset.row = row;
         cellEl.dataset.col = col;
-        if (board[row][col].getValue() === 'X') {
+        if (board[row][col].getValue() === 1) {
           cellEl.classList.add('player-1');
+          cellEl.disabled = true;
         }
-        if (board[row][col].getValue() === 'O') {
+        if (board[row][col].getValue() === 2) {
           cellEl.classList.add('player-2');
+          cellEl.disabled = true;
         }
         boardEl.appendChild(cellEl);
       }
@@ -184,6 +186,12 @@ const ScreenController = () => {
     const row = e.target.dataset.row;
     const col = e.target.dataset.col;
 
+    // Skip invalid user input
+    // When a cell has already been clicked, it's pointer event is disabled
+    // Cliked on it results in row and col being undefined
+    if (!row || !col) return;
+
+    // Play a valid move
     game.playRound(row, col);
     updateScreen();
   };

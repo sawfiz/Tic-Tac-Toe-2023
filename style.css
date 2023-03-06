@@ -16,7 +16,7 @@ h1 {
   width: 500px;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  border: 1px solid black;
+  border: 5px solid black;
   gap: 20px;
   padding: 20px;
   background-color: yellow;
@@ -30,15 +30,17 @@ h1 {
   font-size: 5rem;
   border: 1px solid purple;
   background: blue;
-  cursor: crosshair;
+  cursor: pointer;
 }
 
 .player-1 {
   background: red;
-  border: 5px solid red;
+  border: 1px solid black;
+  cursor: default;
 }
 
 .player-2 {
   background: green;
-  border: 5px solid green;
+  border: 1px solid black;
+  cursor: default;
 }
