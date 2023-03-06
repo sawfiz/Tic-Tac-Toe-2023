@@ -2,10 +2,43 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  border: 1px solid red;
-  font-family:'Courier New', Courier, monospace;
+  /* border: 1px solid red; */
+  font-family: 'Courier New', Courier, monospace;
 }
 
 h1 {
-  color: red;
+  color: blue;
+}
+
+.board {
+  display: grid;
+  height: 500px;
+  width: 500px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  border: 1px solid black;
+  gap: 20px;
+  padding: 20px;
+  background-color: yellow;
+}
+
+.cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 5rem;
+  border: 1px solid purple;
+  background: blue;
+  cursor: crosshair;
+}
+
+.player-1 {
+  background: red;
+  border: 5px solid red;
+}
+
+.player-2 {
+  background: green;
+  border: 5px solid green;
 }

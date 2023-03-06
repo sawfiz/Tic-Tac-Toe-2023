@@ -45,9 +45,10 @@ const GameBoard = () => {
   // Check if the latest move is the winning move
   const isWinningMove = (row, col) => {
     const player = board[row][col].getValue();
-    console.log(player);
+    console.log('🚀 ~ file: index.js:48 ~ isWinningMove ~ row:', row);
+    console.log('🚀 ~ file: index.js:48 ~ isWinningMove ~ col:', col);
     const size = board.length;
-  
+
     // Check row
     let count = 0;
     for (let i = 0; i < size; i++) {
@@ -60,7 +61,7 @@ const GameBoard = () => {
         count = 0;
       }
     }
-  
+
     // Check column
     count = 0;
     for (let i = 0; i < size; i++) {
@@ -73,9 +74,10 @@ const GameBoard = () => {
         count = 0;
       }
     }
-  
+
     // Check diagonal from top left to bottom right
     if (row === col) {
+      console.log('hi');
       count = 0;
       for (let i = 0; i < size; i++) {
         if (board[i][i].getValue() === player) {
@@ -88,26 +90,31 @@ const GameBoard = () => {
         }
       }
     }
-  
+
     // Check diagonal from top right to bottom left
-    if (row === size - col - 1) {
-      count = 0;
-      for (let i = 0; i < size; i++) {
-        if (board[i][size - i - 1].getValue() === player) {
-          count++;
-          if (count === size) {
-            return true;
-          }
-        } else {
-          count = 0;
+    // console.log("🚀 ~ file: index.js:98 ~ isWinningMove ~ row:", row)
+    // console.log("🚀 ~ file: index.js:97 ~ isWinningMove ~ size - col - 1:", size - col - 1)
+    // if (row === (size - col - 1)) {
+    // if (row === 0 || col === 2) {
+    // if (true) {
+    // console.log('ji');
+    count = 0;
+    for (let i = 0; i < size; i++) {
+      if (board[i][size - i - 1].getValue() === player) {
+        count++;
+        console.log(count);
+        if (count === size) {
+          return true;
         }
+      } else {
+        count = 0;
       }
     }
-  
+    // }
+
     // No winning condition found
     return false;
   };
-  
 
   return { getBoard, printBoard, placeMarker, isWinningMove };
 };
@@ -129,19 +136,60 @@ const GameController = (
   const getActivePlayer = () => activePlayer;
 
   const switchPlayer = () => {
-    activePlayer = activePlayer === players[0] ? players[1] : players[0] 
-  }
+    activePlayer = activePlayer === players[0] ? players[1] : players[0];
+  };
 
   const playRound = (row, col) => {
     board.placeMarker(row, col, getActivePlayer().marker);
     board.printBoard();
     if (board.isWinningMove(row, col)) {
-      alert(`${getActivePlayer().name} wins!`)
+      alert(`${getActivePlayer().name} wins!`);
     }
     switchPlayer();
   };
 
-  return { playRound };
+  return { playRound, getBoard: board.getBoard };
 };
 
-const game = GameController();
+const ScreenController = () => {
+  const game = GameController();
+  const boardEl = document.querySelector('.board');
+
+  const updateScreen = () => {
+    boardEl.innerHTML = '';
+
+    const board = game.getBoard();
+    console.log(board);
+    for (let row = 0; row < board.length; row++) {
+      // const rowEl = document.createElement('div')
+      // boardEl.appendChild(rowEl)
+      for (let col = 0; col < board.length; col++) {
+        const cellEl = document.createElement('button');
+        cellEl.classList.add('cell');
+        cellEl.textContent = board[row][col].getValue();
+        cellEl.dataset.row = row;
+        cellEl.dataset.col = col;
+        if (board[row][col].getValue() === 'X') {
+          cellEl.classList.add('player-1');
+        }
+        if (board[row][col].getValue() === 'O') {
+          cellEl.classList.add('player-2');
+        }
+        boardEl.appendChild(cellEl);
+      }
+    }
+  };
+
+  const clickHandlerBoard = (e) => {
+    const row = e.target.dataset.row;
+    const col = e.target.dataset.col;
+
+    game.playRound(row, col);
+    updateScreen();
+  };
+  boardEl.addEventListener('click', clickHandlerBoard);
+
+  updateScreen();
+};
+
+ScreenController();
