@@ -45,8 +45,6 @@ const GameBoard = () => {
   // Check if the latest move is the winning move
   const isWinningMove = (row, col) => {
     const player = board[row][col].getValue();
-    console.log('🚀 ~ file: index.js:48 ~ isWinningMove ~ row:', row);
-    console.log('🚀 ~ file: index.js:48 ~ isWinningMove ~ col:', col);
     const size = board.length;
 
     // Check row
@@ -77,7 +75,6 @@ const GameBoard = () => {
 
     // Check diagonal from top left to bottom right
     if (row === col) {
-      console.log('hi');
       count = 0;
       for (let i = 0; i < size; i++) {
         if (board[i][i].getValue() === player) {
@@ -102,7 +99,6 @@ const GameBoard = () => {
     for (let i = 0; i < size; i++) {
       if (board[i][size - i - 1].getValue() === player) {
         count++;
-        console.log(count);
         if (count === size) {
           return true;
         }
@@ -168,34 +164,38 @@ const GameController = (
   const playRound = (row, col) => {
     board.placeMarker(row, col, getActivePlayer().marker);
     board.printBoard();
-    if (board.isWinningMove(row, col)) {
-      alert(`${getActivePlayer().name} wins!`);
-      return;
-    }
-
-    console.log("🚀 ~ file: index.js:176 ~ playRound ~ board.availableCells():", board.availableCells())
-    if (board.availableCells() === 0) {
-      alert('Tie');
-      return;
-    }
-
+    if (isEndGame(row, col)) return;
     switchPlayer();
 
     if (getActivePlayer().type === 'computer') {
-      if (getActivePlayer().level === 'random') {
-        let row, col;
-        do {
-          row = Math.floor(Math.random() * 3);
-          col = Math.floor(Math.random() * 3);
-        } while (!board.isAvailable(row, col));
-        board.placeMarker(row, col, getActivePlayer().marker);
-        if (board.isWinningMove(row, col)) {
-          alert(`${getActivePlayer().name} wins!`);
-        }
-        switchPlayer();
-      }
+      if (getActivePlayer().level === 'random') makeRandomPlay();
     }
   };
+
+  const makeRandomPlay= () => {
+    let row, col;
+    // Try until computer finds a valid cell to play
+    do {
+      row = Math.floor(Math.random() * 3);
+      col = Math.floor(Math.random() * 3);
+    } while (!board.isAvailable(row, col));
+
+    board.placeMarker(row, col, getActivePlayer().marker);
+    if (isEndGame(row, col)) return;
+    switchPlayer();
+  }
+
+  const isEndGame = (row, col) => {
+    if (board.isWinningMove(row, col)) {
+      alert(`${getActivePlayer().name} wins!`);
+      return true;
+    }
+    console.log("🚀 ~ file: index.js:176 ~ playRound ~ board.availableCells():", board.availableCells())
+    if (board.availableCells() === 0) {
+      alert('Tie');
+      return true;
+    }
+  }
 
   return { playRound, getBoard: board.getBoard };
 };
@@ -208,7 +208,6 @@ const ScreenController = () => {
     boardEl.innerHTML = '';
 
     const board = game.getBoard();
-    console.log(board);
     for (let row = 0; row < board.length; row++) {
       // const rowEl = document.createElement('div')
       // boardEl.appendChild(rowEl)
