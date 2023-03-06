@@ -37,11 +37,79 @@ const GameBoard = () => {
     console.log(values);
   };
 
+  // Place the marker of the active player in desired cell
   const placeMarker = (row, col, player) => {
     board[row][col].setValue(player);
   };
 
-  return { getBoard, printBoard, placeMarker };
+  // Check if the latest move is the winning move
+  const isWinningMove = (row, col) => {
+    const player = board[row][col].getValue();
+    console.log(player);
+    const size = board.length;
+  
+    // Check row
+    let count = 0;
+    for (let i = 0; i < size; i++) {
+      if (board[row][i].getValue() === player) {
+        count++;
+        if (count === size) {
+          return true;
+        }
+      } else {
+        count = 0;
+      }
+    }
+  
+    // Check column
+    count = 0;
+    for (let i = 0; i < size; i++) {
+      if (board[i][col].getValue() === player) {
+        count++;
+        if (count === size) {
+          return true;
+        }
+      } else {
+        count = 0;
+      }
+    }
+  
+    // Check diagonal from top left to bottom right
+    if (row === col) {
+      count = 0;
+      for (let i = 0; i < size; i++) {
+        if (board[i][i].getValue() === player) {
+          count++;
+          if (count === size) {
+            return true;
+          }
+        } else {
+          count = 0;
+        }
+      }
+    }
+  
+    // Check diagonal from top right to bottom left
+    if (row === size - col - 1) {
+      count = 0;
+      for (let i = 0; i < size; i++) {
+        if (board[i][size - i - 1].getValue() === player) {
+          count++;
+          if (count === size) {
+            return true;
+          }
+        } else {
+          count = 0;
+        }
+      }
+    }
+  
+    // No winning condition found
+    return false;
+  };
+  
+
+  return { getBoard, printBoard, placeMarker, isWinningMove };
 };
 
 const GameController = (
@@ -67,6 +135,9 @@ const GameController = (
   const playRound = (row, col) => {
     board.placeMarker(row, col, getActivePlayer().marker);
     board.printBoard();
+    if (board.isWinningMove(row, col)) {
+      alert(`${getActivePlayer().name} wins!`)
+    }
     switchPlayer();
   };
 
