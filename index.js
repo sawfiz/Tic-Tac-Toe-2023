@@ -1,7 +1,9 @@
+const BoardSize = 3
+
 // Cell class
 // Each playable location on the board is a cell object
 const Cell = () => {
-  let value = 0;
+  let value = '.';
 
   const setValue = (marker) => {
     value = marker;
@@ -113,7 +115,7 @@ const GameBoard = () => {
   };
 
   const isAvailable = (row, col) => {
-    if (board[row][col].getValue() === 0) {
+    if (board[row][col].getValue() === '.') {
       return true;
     }
     return false;
@@ -123,7 +125,7 @@ const GameBoard = () => {
     count = 0;
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
-        if (board[i][j].getValue() === 0) {
+        if (board[i][j].getValue() === '.') {
           count++;
         }
       }
@@ -149,8 +151,8 @@ const GameController = (
   board.printBoard();
 
   const players = [
-    { name: playerOneName, marker: 1, type: 'human', level: 'none' },
-    { name: playerTwoName, marker: 2, type: 'computer', level: 'random' },
+    { name: playerOneName, marker: 'X', type: 'human', level: 'none' },
+    { name: playerTwoName, marker: 'O', type: 'computer', level: 'ai' },
   ];
 
   let activePlayer = players[0];
@@ -161,17 +163,133 @@ const GameController = (
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
   };
 
+  // Make a play in a chosen cell
+  // If there is a computer player, the computer makes a play too
   const playRound = (row, col) => {
     board.placeMarker(row, col, getActivePlayer().marker);
     board.printBoard();
     if (isEndGame(row, col)) return;
     switchPlayer();
-
+    
     if (getActivePlayer().type === 'computer') {
       if (getActivePlayer().level === 'random') makeRandomPlay();
+      if (getActivePlayer().level === 'ai') makeMinimaxPlay();
+      board.printBoard();
     }
   };
 
+  // A computer player that plays using the Minimax algorithm
+  const makeMinimaxPlay = () => {
+    let bestScore = -Infinity;
+    let bestRow, bestCol;
+    const boardArray = board.getBoard()
+
+    for (let row = 0; row < BoardSize; row++) {
+      for (let col = 0; col < BoardSize; col++) {
+        if (boardArray[row][col].getValue() === '.') {
+          boardArray[row][col].setValue('O');
+          const score = minimax(boardArray, false);
+          if (score > bestScore) {
+            bestScore = score;
+            bestRow = row;
+            bestCol = col;
+            // bestMove = row * BoardSize + col;
+          }
+          boardArray[row][col].setValue('.');
+        }
+      }
+    }
+    // gameBoard.disableSquare(bestMove);
+    // return bestMove;
+    board.placeMarker(bestRow, bestCol, getActivePlayer().marker);
+    if (isEndGame(bestRow, bestCol)) return;
+    switchPlayer();
+  }
+
+  function minimax(boardArray, isMaximizing) {
+    const scores = {
+      O: 10,
+      tie: 0,
+      X: -10,
+    };
+
+    const result = checkWinner(boardArray);
+    if (result !== null) {
+      console.log("🚀 ~ file: index.js:222 ~ minimax ~ scores[result]:", scores[result])
+      return scores[result];
+    }
+
+    if (isMaximizing) {
+      let bestScore = -Infinity;
+      for (let i = 0; i < BoardSize; i++) {
+        for (let j = 0; j < BoardSize; j++) {
+          if (boardArray[i][j].getValue() === '.') {
+            boardArray[i][j].setValue('O');
+            const score = minimax(boardArray, false);
+            bestScore = Math.max(score, bestScore);
+            boardArray[i][j].setValue('.');
+          }
+        }
+      }
+      return bestScore;
+      // eslint-disable-next-line no-else-return
+    } else {
+      let bestScore = Infinity;
+      for (let i = 0; i < BoardSize; i++) {
+        for (let j = 0; j < BoardSize; j++) {
+          if (boardArray[i][j].getValue() === '.') {
+            boardArray[i][j].setValue('X');
+            const score = minimax(boardArray, true);
+            bestScore = Math.min(score, bestScore);
+            boardArray[i][j].setValue('.');
+          }
+        }
+      }
+      return bestScore;
+    }
+  }
+
+
+  function checkWinner(boardArray) {
+    // Check rows
+    for (let i = 0; i < BoardSize; i++) {
+      if (equals3(boardArray[i][0], boardArray[i][1], boardArray[i][2])) {
+        return boardArray[i][0].getValue();
+      }
+    }
+    // Check columns
+    for (let i = 0; i < boardArray; i++) {
+      if (equals3(boardArray[0][i], boardArray[1][i], boardArray[2][i])){
+        return boardArray[0][i].getValue();
+      }
+    }
+    // Check diagnal
+    if (equals3(boardArray[0][0], boardArray[1][1], boardArray[2][2])) {
+      return boardArray[1][1].getValue();
+    }
+    // Check the other diagnal
+    if (equals3(boardArray[0][2], boardArray[1][1], boardArray[2][0])) {
+      return boardArray[1][1].getValue();
+    }
+    // Check for tie
+    let occupiedSqures = 0;
+    for (let i = 0; i < BoardSize; i++) {
+      for (let j = 0; j < BoardSize; j++) {
+        if (boardArray[i][j].getValue() !== '.') occupiedSqures++;
+      }
+    }
+    if (occupiedSqures === 9) return 'tie'; // All squares are taken up
+    return null; // Not a game terminating play
+  }
+
+
+  function equals3(a, b, c) {
+    result = a.getValue() === b.getValue() && a.getValue() === c.getValue() && a.getValue() !== '.';    
+    return result;
+  }
+
+
+  // A computer player that plays random cells
   const makeRandomPlay= () => {
     let row, col;
     // Try until computer finds a valid cell to play
@@ -185,12 +303,12 @@ const GameController = (
     switchPlayer();
   }
 
+  // A game ends if there is a winner or if there is no more space to play
   const isEndGame = (row, col) => {
     if (board.isWinningMove(row, col)) {
       alert(`${getActivePlayer().name} wins!`);
       return true;
     }
-    console.log("🚀 ~ file: index.js:176 ~ playRound ~ board.availableCells():", board.availableCells())
     if (board.availableCells() === 0) {
       alert('Tie');
       return true;
@@ -219,11 +337,11 @@ const ScreenController = () => {
         cellEl.dataset.col = col;
 
         // Style and disable played cells
-        if (board[row][col].getValue() === 1) {
+        if (board[row][col].getValue() === 'X') {
           cellEl.classList.add('player-1');
           cellEl.disabled = true;
         }
-        if (board[row][col].getValue() === 2) {
+        if (board[row][col].getValue() === 'O') {
           cellEl.classList.add('player-2');
           cellEl.disabled = true;
         }
