@@ -1,7 +1,7 @@
 // Cell class
 // Each playable location on the board is a cell object
 const Cell = () => {
-  let value = '.';
+  let value = 0;
 
   const setValue = (marker) => {
     value = marker;
@@ -116,7 +116,33 @@ const GameBoard = () => {
     return false;
   };
 
-  return { getBoard, printBoard, placeMarker, isWinningMove };
+  const isAvailable = (row, col) => {
+    if (board[row][col].getValue() === 0) {
+      return true;
+    }
+    return false;
+  };
+
+  const availableCells = () => {
+    count = 0;
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (board[i][j].getValue() === 0) {
+          count++;
+        }
+      }
+    }
+    return count;
+  };
+
+  return {
+    getBoard,
+    printBoard,
+    placeMarker,
+    isWinningMove,
+    isAvailable,
+    availableCells,
+  };
 };
 
 const GameController = (
@@ -127,8 +153,8 @@ const GameController = (
   board.printBoard();
 
   const players = [
-    { name: playerOneName, marker: 1 },
-    { name: playerTwoName, marker: 2 },
+    { name: playerOneName, marker: 1, type: 'human', level: 'none' },
+    { name: playerTwoName, marker: 2, type: 'computer', level: 'random' },
   ];
 
   let activePlayer = players[0];
@@ -144,8 +170,31 @@ const GameController = (
     board.printBoard();
     if (board.isWinningMove(row, col)) {
       alert(`${getActivePlayer().name} wins!`);
+      return;
     }
+
+    console.log("🚀 ~ file: index.js:176 ~ playRound ~ board.availableCells():", board.availableCells())
+    if (board.availableCells() === 0) {
+      alert('Tie');
+      return;
+    }
+
     switchPlayer();
+
+    if (getActivePlayer().type === 'computer') {
+      if (getActivePlayer().level === 'random') {
+        let row, col;
+        do {
+          row = Math.floor(Math.random() * 3);
+          col = Math.floor(Math.random() * 3);
+        } while (!board.isAvailable(row, col));
+        board.placeMarker(row, col, getActivePlayer().marker);
+        if (board.isWinningMove(row, col)) {
+          alert(`${getActivePlayer().name} wins!`);
+        }
+        switchPlayer();
+      }
+    }
   };
 
   return { playRound, getBoard: board.getBoard };
@@ -169,6 +218,8 @@ const ScreenController = () => {
         cellEl.textContent = board[row][col].getValue();
         cellEl.dataset.row = row;
         cellEl.dataset.col = col;
+
+        // Style and disable played cells
         if (board[row][col].getValue() === 1) {
           cellEl.classList.add('player-1');
           cellEl.disabled = true;
