@@ -6,7 +6,6 @@ function delay(time) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
 
-
 // Cell class
 // Each playable location on the board is a cell object
 const Cell = () => {
@@ -83,6 +82,7 @@ const GameBoard = () => {
     return null; // Not a game terminating play
   }
 
+  // Compare if 3 cells have equal values (markers)
   function equals3(a, b, c) {
     result =
       a.getValue() === b.getValue() &&
@@ -91,6 +91,7 @@ const GameBoard = () => {
     return result;
   }
 
+  // Check is a cell is available for playing
   const isAvailable = (row, col) => {
     if (board[row][col].getValue() === '.') {
       return true;
@@ -98,11 +99,12 @@ const GameBoard = () => {
     return false;
   };
 
+  // Count the number of cells that are avaialble
   const availableCells = () => {
     count = 0;
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
-        if (board[i][j].getValue() === '.') {
+        if (isAvailable) {
           count++;
         }
       }
@@ -120,6 +122,7 @@ const GameBoard = () => {
   };
 };
 
+// Game controller where the game playing logic is
 const GameController = (
   playerOneName = 'Player One',
   playerTwoName = 'Player Two'
@@ -129,7 +132,7 @@ const GameController = (
 
   const players = [
     { name: playerOneName, marker: 'X', type: 'human', level: 'none' },
-    { name: playerTwoName, marker: 'O', type: 'computer', level: 'random' },
+    { name: playerTwoName, marker: 'O', type: 'computer', level: 'ai' },
   ];
 
   let activePlayer = players[0];
@@ -144,20 +147,26 @@ const GameController = (
   // If there is a computer player, the computer makes a play too
   const playRound = (row, col) => {
     let result;
+
+    // Play the human player play
     board.placeMarker(row, col, activePlayer.marker);
     board.printBoard();
+
+    // Check for end of game and game result
     result = board.checkWinner();
-    console.log('🚀 ~ file: index.js:144 ~ playRound ~ result:', result);
-    if (result)  return result;
+    if (result) return result;
+
     switchPlayer();
 
+    // Computer player plays
     if (getActivePlayer().type === 'computer') {
       if (activePlayer.level === 'random') {
         result = makeRandomPlay();
-        console.log('🚀 ~ file: index.js:150 ~ playRound ~ result:', result);
       }
 
-      if (activePlayer.level === 'ai') makeMinimaxPlay();
+      if (activePlayer.level === 'ai') {
+        result = makeMinimaxPlay();
+      }
 
       board.printBoard();
       if (result) return result;
@@ -168,26 +177,40 @@ const GameController = (
   const makeMinimaxPlay = () => {
     let bestScore = -Infinity;
     let bestRow, bestCol;
+    let result;
 
+    // Go through all avaialble cells to find the best posible move
     for (let row = 0; row < BoardSize; row++) {
       for (let col = 0; col < BoardSize; col++) {
         if (board.isAvailable(row, col)) {
+          // Try to play an available cell
           board.placeMarker(row, col, activePlayer.marker);
+          // Recursively get the score of this play
           const score = minimax(board, false);
+          // Record if it is a better move
           if (score > bestScore) {
             bestScore = score;
             bestRow = row;
             bestCol = col;
           }
+          // Reset the cell 
           board.placeMarker(row, col, '.');
         }
       }
     }
+
+    // Play the best move found
     board.placeMarker(bestRow, bestCol, activePlayer.marker);
-    if (isEndGame(bestRow, bestCol)) return activePlayer;
+
+    // If the games with a winner of tie, return result
+    result = board.checkWinner();
+    if (result) return result;
+
+    // Switch player and wait for next play
     switchPlayer();
   };
 
+  // Recursive minimax algorithm
   function minimax(board, isMaximizing) {
     const scores = {
       O: 10,
@@ -195,34 +218,35 @@ const GameController = (
       X: -10,
     };
 
+    // Terminating condition for the recursive algorithm
     const result = board.checkWinner();
     if (result !== null) {
       return scores[result];
     }
 
+    // Alternate between Min and Max players
     if (isMaximizing) {
       let bestScore = -Infinity;
       for (let i = 0; i < BoardSize; i++) {
         for (let j = 0; j < BoardSize; j++) {
           if (board.isAvailable(i, j)) {
-            board[i][j].setValue('O');
+            board.placeMarker(i, j, 'O');
             const score = minimax(board, false);
             bestScore = Math.max(score, bestScore);
-            board[i][j].setValue('.');
+            board.placeMarker(i, j, '.');
           }
         }
       }
       return bestScore;
-      // eslint-disable-next-line no-else-return
     } else {
       let bestScore = Infinity;
       for (let i = 0; i < BoardSize; i++) {
         for (let j = 0; j < BoardSize; j++) {
           if (board.isAvailable(i, j)) {
-            board[i][j].setValue('X');
+            board.placeMarker(i, j, 'X');
             const score = minimax(board, true);
             bestScore = Math.min(score, bestScore);
-            board[i][j].setValue('.');
+            board.placeMarker(i, j, '.');
           }
         }
       }
@@ -230,51 +254,56 @@ const GameController = (
     }
   }
 
-  // A computer player that plays random cells
+  // A computer player that plays at random cells
   const makeRandomPlay = () => {
     let row, col;
-    let result;
+    let result; // Result from checkWinner, can be 'X', 'O', 'Tie', or null
+
     // Try until computer finds a valid cell to play
     do {
       row = Math.floor(Math.random() * 3);
       col = Math.floor(Math.random() * 3);
     } while (!board.isAvailable(row, col));
 
+    // Play a valid move
     board.placeMarker(row, col, activePlayer.marker);
     result = board.checkWinner();
+
+    // Getting a valid result means a game is ended with a winner or a tie
     if (result) return result;
+
+    // Otherwise, switch active player and continue the game
     switchPlayer();
   };
 
   return { playRound, getBoard: board.getBoard, getActivePlayer };
 };
 
+// The ScreenController that presents a view and gets user requests
 const ScreenController = (numGames) => {
   let gameCount = 0;
   let endGame = false;
 
   const playNextGame = () => {
     gameCount++;
-    console.log(
-      '🚀 ~ file: index.js:383 ~ playNextGame ~ gameCount:',
-      gameCount
-    );
 
     if (gameCount <= numGames) {
       const game = GameController();
       const boardEl = document.querySelector('.board');
 
+      // Redraws the game board in the web page
       const updateScreen = () => {
         boardEl.innerHTML = '';
-
         const board = game.getBoard();
+
         for (let row = 0; row < board.length; row++) {
-          // const rowEl = document.createElement('div')
-          // boardEl.appendChild(rowEl)
           for (let col = 0; col < board.length; col++) {
+            // Creates each cell element
             const cellEl = document.createElement('button');
             cellEl.classList.add('cell');
             cellEl.textContent = board[row][col].getValue();
+
+            // Add data attributes to the cell elements that can be accessed by event handler
             cellEl.dataset.row = row;
             cellEl.dataset.col = col;
 
@@ -288,22 +317,25 @@ const ScreenController = (numGames) => {
               cellEl.disabled = true;
             }
 
-            // If game over, disable all cells
+            // If the game is over, disable all cells
             if (endGame) {
               cellEl.disabled = true;
               cellEl.style.cursor = 'default';
             }
+
             boardEl.appendChild(cellEl);
           }
         }
       };
 
+      // Handles clicks on the board
+      // Needs to be ayncs to use the delay function to delay the alerts
       async function clickHandlerBoard(e) {
         const row = e.target.dataset.row;
         const col = e.target.dataset.col;
         let result;
 
-        // Skip invalid user input
+        // Ignore invalid user input
         // When a cell has already been clicked, it's pointer event is disabled
         // Cliked on it results in row and col being undefined
         if (!row || !col) return;
@@ -322,7 +354,7 @@ const ScreenController = (numGames) => {
           }
         }
         updateScreen();
-      };
+      }
       boardEl.addEventListener('click', clickHandlerBoard);
 
       updateScreen();
@@ -335,9 +367,7 @@ const ScreenController = (numGames) => {
 };
 
 // Prompt user for number of games to play
-// let numGames = parseInt(prompt("How many games do you want to play?"))
-
-// Create ScreenController instance and play gam
-
 const numGames = parseInt(prompt('How many games do you want to play?'));
+
+// Create ScreenController instance and play game
 ScreenController(numGames);
