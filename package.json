@@ -1,0 +1,28 @@
+{
+  "name": "tic-tac-toe-2023",
+  "version": "1.0.0",
+  "description": "Redo the Tic Tac Toe project",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sawfiz/Tic-Tac-Toe-2023.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sawfiz/Tic-Tac-Toe-2023/issues"
+  },
+  "homepage": "https://github.com/sawfiz/Tic-Tac-Toe-2023#readme",
+  "devDependencies": {
+    "css-loader": "^6.7.3",
+    "html-webpack-plugin": "^5.5.0",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  }
+}
