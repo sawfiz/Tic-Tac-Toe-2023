@@ -3,7 +3,7 @@ import GameController from './gameController';
 import delay from './delay';
 
 // The ScreenController that presents a view and gets user requests
-const ScreenController = (numGames) => {
+const ScreenController = (numGames, players) => {
   let gameCount = 0;
   let endGame = false;
 
@@ -11,7 +11,7 @@ const ScreenController = (numGames) => {
     gameCount++;
 
     if (gameCount <= numGames) {
-      const game = GameController();
+      const game = GameController(players);
       const boardEl = document.querySelector('.board');
 
       // Redraws the game board in the web page
@@ -73,7 +73,7 @@ const ScreenController = (numGames) => {
             alert('Tie!');
           } else {
             await delay(100);
-            alert(`${game.getActivePlayer().name} wins!`);
+            alert(`${game.getActivePlayer().type} wins!`);
           }
         }
         updateScreen();

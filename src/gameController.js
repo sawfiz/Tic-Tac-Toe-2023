@@ -1,26 +1,46 @@
+import { Players } from './players';
 import GameBoard from './gameBoard';
 import makeRandomPlay from './ramdomPlay';
 import makeMinimaxPlay from './miniMax';
 
 // Game controller where the game playing logic is
-const GameController = (
-  playerOneName = 'Player One',
-  playerTwoName = 'Player Two'
-) => {
+const GameController = (players) => {
   const board = GameBoard();
   board.printBoard();
 
-  const players = [
-    { name: playerOneName, marker: 'X', type: 'human', level: 'none' },
-    { name: playerTwoName, marker: 'O', type: 'computer', level: 'ai' },
-  ];
-
   let activePlayer = players[0];
+  console.log(activePlayer);
 
   const getActivePlayer = () => activePlayer;
 
   const switchPlayer = () => {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
+  };
+
+  const makeComputerPlay = () => {
+    let result;
+    // Computer player plays
+    if (activePlayer.type === 'random') {
+      result = makeRandomPlay(board, activePlayer.marker);
+      console.log(
+        '🚀 ~ file: gameController.js:25 ~ makeComputerPlay ~ result:',
+        result
+      );
+      board.printBoard();
+      if (result) return result;
+      switchPlayer();
+    }
+
+    if (activePlayer.type === 'ai') {
+      result = makeMinimaxPlay(board, activePlayer.marker);
+      console.log(
+        '🚀 ~ file: gameController.js:32 ~ makeComputerPlay ~ result:',
+        result
+      );
+      board.printBoard();
+      if (result) return result;
+      switchPlayer();
+    }
   };
 
   // Make a play in a chosen cell
@@ -34,26 +54,23 @@ const GameController = (
 
     // Check for end of game and game result
     result = board.checkWinner();
+    console.log(
+      '🚀 ~ file: gameController.js:49 ~ playRound ~ result:',
+      result
+    );
     if (result) return result;
 
     switchPlayer();
 
     // Computer player plays
-    if (getActivePlayer().type === 'computer') {
-      if (activePlayer.level === 'random') {
-        result = makeRandomPlay(board, activePlayer.marker);
-        switchPlayer();
-      }
-
-      if (activePlayer.level === 'ai') {
-        result = makeMinimaxPlay(board, activePlayer.marker);
-        switchPlayer();
-      }
-
-      board.printBoard();
-      if (result) return result;
-    }
+    result = makeComputerPlay();
+    if (result) return result;
   };
+
+  // If computer player is player 1, make a computer play first
+  if (activePlayer.type !== 'human') {
+    makeComputerPlay();
+  }
 
   return { playRound, getBoard: board.getBoard, getActivePlayer };
 };

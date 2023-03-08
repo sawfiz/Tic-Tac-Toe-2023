@@ -13,7 +13,7 @@ const makeMinimaxPlay = (board, marker) => {
         // Try to play an available cell
         board.placeMarker(row, col, marker);
         // Recursively get the score of this play
-        const score = minimax(board, false);
+        const score = minimax(board, marker, false);
         // Record if it is a better move
         if (score > bestScore) {
           bestScore = score;
@@ -35,12 +35,13 @@ const makeMinimaxPlay = (board, marker) => {
 };
 
 // Recursive minimax algorithm
-function minimax(board, isMaximizing) {
+function minimax(board, marker, isMaximizing) {
   const scores = {
     O: 10,
     tie: 0,
     X: -10,
   };
+  const oppositeMarker = marker === 'O' ? 'X' : 'O';
 
   // Terminating condition for the recursive algorithm
   const result = board.checkWinner();
@@ -54,8 +55,8 @@ function minimax(board, isMaximizing) {
     for (let i = 0; i < BoardSize; i++) {
       for (let j = 0; j < BoardSize; j++) {
         if (board.isAvailable(i, j)) {
-          board.placeMarker(i, j, 'O');
-          const score = minimax(board, false);
+          board.placeMarker(i, j, marker);
+          const score = minimax(board, marker, false);
           bestScore = Math.max(score, bestScore);
           board.placeMarker(i, j, '.');
         }
@@ -67,8 +68,8 @@ function minimax(board, isMaximizing) {
     for (let i = 0; i < BoardSize; i++) {
       for (let j = 0; j < BoardSize; j++) {
         if (board.isAvailable(i, j)) {
-          board.placeMarker(i, j, 'X');
-          const score = minimax(board, true);
+          board.placeMarker(i, j, oppositeMarker);
+          const score = minimax(board, oppositeMarker, true);
           bestScore = Math.min(score, bestScore);
           board.placeMarker(i, j, '.');
         }
