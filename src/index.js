@@ -12,3 +12,4 @@ players.setPlayers([
 
 // Create ScreenController instance and play game
 ScreenController(1, players.getPlayers());
+
