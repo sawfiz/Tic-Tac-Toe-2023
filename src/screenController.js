@@ -3,15 +3,13 @@ import GameController from './gameController';
 import delay from './delay';
 
 // The ScreenController that presents a view and gets user requests
-const ScreenController = (numGames, players) => {
-  let gameCount = 0;
-  let endGame = false;
+const ScreenController = async (numGames, players) => {
+  let gamePlayed = 0;
 
-  const playNextGame = () => {
-    gameCount++;
+  const playGame = () => {
+    const game = GameController(players);
 
-    if (gameCount <= numGames) {
-      const game = GameController(players);
+    return new Promise(async (resolve, reject) => {
       const boardEl = document.querySelector('.board');
 
       // Redraws the game board in the web page
@@ -39,13 +37,6 @@ const ScreenController = (numGames, players) => {
               cellEl.classList.add('player-2');
               cellEl.disabled = true;
             }
-
-            // If the game is over, disable all cells
-            if (endGame) {
-              cellEl.disabled = true;
-              cellEl.style.cursor = 'default';
-            }
-
             boardEl.appendChild(cellEl);
           }
         }
@@ -66,7 +57,7 @@ const ScreenController = (numGames, players) => {
         // Play a valid move
         result = game.playRound(row, col);
         if (result) {
-          endGame = true;
+
           updateScreen();
           if (result === 'tie') {
             await delay(100);
@@ -75,18 +66,35 @@ const ScreenController = (numGames, players) => {
             await delay(100);
             alert(`${game.getActivePlayer().type} wins!`);
           }
+          game.resetBoard();
+          resolve('game over');
         }
         updateScreen();
       }
       boardEl.addEventListener('click', clickHandlerBoard);
 
       updateScreen();
-    } else {
-      alert(`You have played ${numGames} games.  Thanks for playing!`);
-    }
+    });
   };
 
-  playNextGame();
+  while (gamePlayed < numGames) {
+    await playGame().then((message) => {
+      gamePlayed++;
+      console.log(
+        '🚀 ~ file: screenController.js:98 ~ ScreenController ~ numGames:',
+        numGames
+      );
+      console.log(
+        '🚀 ~ file: screenController.js:98 ~ ScreenController ~ gamePlayed:',
+        gamePlayed
+      );
+      console.log(
+        '🚀 ~ file: screenController.js:98 ~ endPlay.then ~ message:',
+        message
+      );
+    });
+  }
+  alert("Game Over!")
 };
 
 export default ScreenController;

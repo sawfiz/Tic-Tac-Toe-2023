@@ -3,13 +3,26 @@ import Cell from "./cell";
 
 // Game board class
 const GameBoard = () => {
-  const board = [];
 
+  let board = [];
+  
   // Creat a 3x3 board, each location is a Cell object
   for (let row = 0; row < BoardSize; row++) {
     board[row] = [];
     for (let col = 0; col < BoardSize; col++) {
       board[row].push(Cell());
+    }
+  }
+
+  const resetBoard = () => {
+    board = [];
+  
+    // Creat a 3x3 board, each location is a Cell object
+    for (let row = 0; row < BoardSize; row++) {
+      board[row] = [];
+      for (let col = 0; col < BoardSize; col++) {
+        board[row].push(Cell());
+      }
     }
   }
 
@@ -93,7 +106,9 @@ const GameBoard = () => {
     return count;
   };
 
+
   return {
+    resetBoard,
     getBoard,
     printBoard,
     placeMarker,

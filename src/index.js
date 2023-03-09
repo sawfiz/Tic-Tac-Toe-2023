@@ -11,5 +11,4 @@ players.setPlayers([
 // const numGames = parseInt(prompt('How many games do you want to play?'));
 
 // Create ScreenController instance and play game
-ScreenController(1, players.getPlayers());
-
+ScreenController(3, players.getPlayers());

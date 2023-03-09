@@ -32,10 +32,6 @@ const GameController = (players) => {
 
     if (activePlayer.type === 'ai') {
       result = makeMinimaxPlay(board, activePlayer.marker);
-      console.log(
-        '🚀 ~ file: gameController.js:32 ~ makeComputerPlay ~ result:',
-        result
-      );
       board.printBoard();
       if (result) return result;
       switchPlayer();
@@ -53,10 +49,6 @@ const GameController = (players) => {
 
     // Check for end of game and game result
     result = board.checkWinner();
-    console.log(
-      '🚀 ~ file: gameController.js:49 ~ playRound ~ result:',
-      result
-    );
     if (result) return result;
 
     switchPlayer();
@@ -71,7 +63,7 @@ const GameController = (players) => {
     makeComputerPlay();
   }
 
-  return { playRound, getBoard: board.getBoard, getActivePlayer };
+  return { playRound, getBoard: board.getBoard,  resetBoard: board.resetBoard, getActivePlayer };
 };
 
 export default GameController;
