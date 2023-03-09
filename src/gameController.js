@@ -3,11 +3,11 @@ import makeRandomPlay from './ramdomPlay';
 import makeMinimaxPlay from './miniMax';
 
 // Game controller where the game playing logic is
-const GameController = (players) => {
+const GameController = (players, startPlayerIndex) => {
   const board = GameBoard();
   board.printBoard();
 
-  let activePlayer = players[0];
+  let activePlayer = players[startPlayerIndex];
   console.log(activePlayer);
 
   const getActivePlayer = () => activePlayer;

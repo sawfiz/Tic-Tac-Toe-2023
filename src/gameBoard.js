@@ -1,30 +1,21 @@
-import { BoardSize } from "./globalConstant";
-import Cell from "./cell";
+import { BoardSize } from './globalConstant';
+import Cell from './cell';
 
 // Game board class
 const GameBoard = () => {
-
   let board = [];
-  
-  // Creat a 3x3 board, each location is a Cell object
-  for (let row = 0; row < BoardSize; row++) {
-    board[row] = [];
-    for (let col = 0; col < BoardSize; col++) {
-      board[row].push(Cell());
-    }
-  }
 
+  // Creat a 3x3 board, each location is a Cell object
   const resetBoard = () => {
     board = [];
-  
-    // Creat a 3x3 board, each location is a Cell object
     for (let row = 0; row < BoardSize; row++) {
       board[row] = [];
       for (let col = 0; col < BoardSize; col++) {
         board[row].push(Cell());
       }
     }
-  }
+  };
+  resetBoard();
 
   // Getter function for the board
   const getBoard = () => {
@@ -105,7 +96,6 @@ const GameBoard = () => {
     }
     return count;
   };
-
 
   return {
     resetBoard,

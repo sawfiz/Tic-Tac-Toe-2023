@@ -5,11 +5,13 @@ import delay from './delay';
 // The ScreenController that presents a view and gets user requests
 const ScreenController = async (numGames, players) => {
   let gamePlayed = 0;
+  let winnerIndex = 1;
 
-  const playGame = () => {
-    const game = GameController(players);
+  const playGame = (startPlayerIndex) => {
+    console.log("🚀 ~ file: screenController.js:11 ~ playGame ~ startPlayerIndex:", startPlayerIndex)
+    const game = GameController(players, startPlayerIndex);
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const boardEl = document.querySelector('.board');
 
       // Redraws the game board in the web page
@@ -56,20 +58,20 @@ const ScreenController = async (numGames, players) => {
 
         // Play a valid move
         result = game.playRound(row, col);
-        if (result) {
-
-          updateScreen();
-          if (result === 'tie') {
-            await delay(100);
-            alert('Tie!');
-          } else {
-            await delay(100);
-            alert(`${game.getActivePlayer().type} wins!`);
-          }
-          game.resetBoard();
-          resolve('game over');
-        }
         updateScreen();
+        if (result) {
+          game.resetBoard();
+          if (result === 'tie') {
+            resolve('Tie!');
+          } else {
+            winnerIndex = players.indexOf(game.getActivePlayer());
+            console.log(
+              '🚀 ~ file: screenController.js:67 ~ clickHandlerBoard ~ winnerIndex:',
+              winnerIndex
+            );
+            resolve(`${game.getActivePlayer().type} wins!`);
+          }
+        }
       }
       boardEl.addEventListener('click', clickHandlerBoard);
 
@@ -77,13 +79,13 @@ const ScreenController = async (numGames, players) => {
     });
   };
 
+  let startPlayerIndex = 0;
   while (gamePlayed < numGames) {
-    await playGame().then((message) => {
+    await playGame(startPlayerIndex).then(async (message) => {
       gamePlayed++;
-      console.log(
-        '🚀 ~ file: screenController.js:98 ~ ScreenController ~ numGames:',
-        numGames
-      );
+      // Make the loser the start player of the new game
+      startPlayerIndex = winnerIndex === 1 ? 0 : 1;
+      console.log("🚀 ~ file: screenController.js:87 ~ awaitplayGame ~ startPlayerIndex:", startPlayerIndex)
       console.log(
         '🚀 ~ file: screenController.js:98 ~ ScreenController ~ gamePlayed:',
         gamePlayed
@@ -92,9 +94,14 @@ const ScreenController = async (numGames, players) => {
         '🚀 ~ file: screenController.js:98 ~ endPlay.then ~ message:',
         message
       );
+      await delay(500);
+      alert(message);
+      // TODO: add logic so the lose go first next round
     });
   }
-  alert("Game Over!")
+  alert('Game Over!');
+  // TODO: disable all cells here
+  // TODO: end game screen to summarize scores, allow user to play again
 };
 
 export default ScreenController;

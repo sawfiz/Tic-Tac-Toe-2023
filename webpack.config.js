@@ -8,6 +8,7 @@ module.exports = {
     filename: 'main.js',
     path: path.resolve(__dirname, 'dist'),
   },
+  devtool: 'inline-source-map',
   plugins: [
     new HtmlWebpackPlugin({
       title: 'Tic Tac Toe',
@@ -24,7 +25,7 @@ module.exports = {
   },
   devServer: {
     mime: {
-      'text/css': ['css']
-    }
-  }
+      'text/css': ['css'],
+    },
+  },
 };

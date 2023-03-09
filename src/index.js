@@ -2,6 +2,11 @@ import { Players } from './players';
 import ScreenController from './screenController';
 
 const players = Players();
+
+// TODO: Add a form for game set up
+// Player attributes
+// Number of games to play
+
 players.setPlayers([
   { name: 'playerOneName', marker: 'X', type: 'ai' },
   { name: 'playerTwoName', marker: 'O', type: 'human' },
