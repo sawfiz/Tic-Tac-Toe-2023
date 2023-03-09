@@ -1,4 +1,3 @@
-import { Players } from './players';
 import GameBoard from './gameBoard';
 import makeRandomPlay from './ramdomPlay';
 import makeMinimaxPlay from './miniMax';
