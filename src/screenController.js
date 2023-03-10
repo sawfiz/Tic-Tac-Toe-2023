@@ -108,7 +108,16 @@ const ScreenController = async () => {
 
         // check if all games have been played
         if (gameIndex >= numGames - 1) {
-          alert('Game Over!');
+          // alert('Game Over!');
+          const gameOverModal = document.querySelector('.game-over-modal');
+          const restartBtn = document.querySelector('#restart-game');
+          gameOverModal.showModal();
+          restartBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            gameOverModal.close();
+            // game();
+            window.location.reload();
+          })
           return scores;
         }
 
