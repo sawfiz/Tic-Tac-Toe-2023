@@ -6,12 +6,16 @@ import delay from './delay';
 const ScreenController = async (numGames, players) => {
   let gamePlayed = 0;
   let winnerIndex = 1;
+  let score = [0, 0, 0]; // Scores for player 1, player 2, tie
 
-  const playGame = (startPlayerIndex) => {
-    console.log("🚀 ~ file: screenController.js:11 ~ playGame ~ startPlayerIndex:", startPlayerIndex)
-    const game = GameController(players, startPlayerIndex);
+  const playGame = (players, startPlayerIndex) => {
+    console.log(
+      '🚀 ~ file: screenController.js:11 ~ playGame ~ startPlayerIndex:',
+      startPlayerIndex
+    );
+    let game = GameController(players, startPlayerIndex);
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const boardEl = document.querySelector('.board');
 
       // Redraws the game board in the web page
@@ -47,6 +51,9 @@ const ScreenController = async (numGames, players) => {
       // Handles clicks on the board
       // Needs to be ayncs to use the delay function to delay the alerts
       async function clickHandlerBoard(e) {
+        // Error handling for is the game previously created is already handled.
+        if (game === null) return;
+
         const row = e.target.dataset.row;
         const col = e.target.dataset.col;
         let result;
@@ -62,14 +69,18 @@ const ScreenController = async (numGames, players) => {
         if (result) {
           game.resetBoard();
           if (result === 'tie') {
-            resolve('Tie!');
+            score[2]++;
+            // Terminate this game.  This causes some issues with Promise
+            // Error message in console. But the game runs fine.
+            game = null;
+            resolve(2);  // Index of Tie is Scores is 2
           } else {
             winnerIndex = players.indexOf(game.getActivePlayer());
-            console.log(
-              '🚀 ~ file: screenController.js:67 ~ clickHandlerBoard ~ winnerIndex:',
-              winnerIndex
-            );
-            resolve(`${game.getActivePlayer().type} wins!`);
+            score[winnerIndex] = score[winnerIndex] + 1;
+            // Terminate this game.  This causes some issues with Promise
+            // Error message in console. But the game runs fine.
+            game = null;
+            resolve(winnerIndex);
           }
         }
       }
@@ -79,29 +90,41 @@ const ScreenController = async (numGames, players) => {
     });
   };
 
-  let startPlayerIndex = 0;
-  while (gamePlayed < numGames) {
-    await playGame(startPlayerIndex).then(async (message) => {
-      gamePlayed++;
-      // Make the loser the start player of the new game
-      startPlayerIndex = winnerIndex === 1 ? 0 : 1;
-      console.log("🚀 ~ file: screenController.js:87 ~ awaitplayGame ~ startPlayerIndex:", startPlayerIndex)
-      console.log(
-        '🚀 ~ file: screenController.js:98 ~ ScreenController ~ gamePlayed:',
-        gamePlayed
-      );
-      console.log(
-        '🚀 ~ file: screenController.js:98 ~ endPlay.then ~ message:',
-        message
-      );
-      await delay(500);
-      alert(message);
-      // TODO: add logic so the lose go first next round
-    });
-  }
-  alert('Game Over!');
-  // TODO: disable all cells here
-  // TODO: end game screen to summarize scores, allow user to play again
+  const playMultipleGames = (numGames, players) => {
+    let gameIndex = 0;
+    let scores = [0, 0, 0];
+
+    const playNextGame = (startPlayerIndex) => {
+      return playGame(players, startPlayerIndex).then(async (winnerIndex) => {
+        // update the scores
+        scores[winnerIndex] += 1;
+
+        // display result of each game
+        await delay(100);
+        if (winnerIndex < 2) {
+          alert(`${players[winnerIndex].type} wins! ` + scores);
+        } else {
+          alert('Tie!' + ' ' + scores);
+        }
+
+        // check if all games have been played
+        if (gameIndex >= numGames - 1) {
+          alert('Game Over! ' + scores);
+          return scores;
+        }
+
+        // otherwise, determine who goes first next and play the next game
+        gameIndex += 1;
+        const nextStartPlayerIndex = winnerIndex === 1 ? 0 : 1;
+        return playNextGame(nextStartPlayerIndex);
+      });
+    };
+
+    // start the first game
+    return playNextGame(0);
+  };
+
+  playMultipleGames(numGames, players);
 };
 
 export default ScreenController;

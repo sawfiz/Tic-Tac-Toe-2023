@@ -24,6 +24,7 @@ module.exports = {
     ],
   },
   devServer: {
+    static: './dist',
     mime: {
       'text/css': ['css'],
     },

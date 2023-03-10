@@ -21,10 +21,6 @@ const GameController = (players, startPlayerIndex) => {
     // Computer player plays
     if (activePlayer.type === 'random') {
       result = makeRandomPlay(board, activePlayer.marker);
-      console.log(
-        '🚀 ~ file: gameController.js:25 ~ makeComputerPlay ~ result:',
-        result
-      );
       board.printBoard();
       if (result) return result;
       switchPlayer();
@@ -44,6 +40,7 @@ const GameController = (players, startPlayerIndex) => {
     let result;
 
     // Play the human player play
+    console.log("human player plays");
     board.placeMarker(row, col, activePlayer.marker);
     board.printBoard();
 
@@ -54,12 +51,14 @@ const GameController = (players, startPlayerIndex) => {
     switchPlayer();
 
     // Computer player plays
+    console.log("Computer plays");
     result = makeComputerPlay();
     if (result) return result;
   };
 
   // If computer player is player 1, make a computer play first
   if (activePlayer.type !== 'human') {
+    console.log("Computer 1st plays");
     makeComputerPlay();
   }
 
