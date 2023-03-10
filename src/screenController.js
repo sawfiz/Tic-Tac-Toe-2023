@@ -1,8 +1,9 @@
 import './style.css';
 import GameController from './gameController';
 import delay from './delay';
-import createElement from './createElement';
 import { Players } from './players';
+import oIcon from './images/O.png';
+import xIcon from './images/X.png';
 
 // The ScreenController that presents a view and gets user requests
 const ScreenController = async () => {
@@ -34,14 +35,22 @@ const ScreenController = async () => {
             cellEl.dataset.row = row;
             cellEl.dataset.col = col;
 
+            const marker = board[row][col].getValue();
+            const markerEl = document.createElement('img');
+            // markerEl.src = marker === 'X' ? xIcon : oIcon;
+            markerEl.classList.add('piece');
+            cellEl.appendChild(markerEl);
+
             // Style and disable played cells
-            if (board[row][col].getValue() === 'X') {
-              cellEl.classList.add('player-1');
-              cellEl.disabled = true;
+            if (marker === 'X') {
+              markerEl.src = xIcon;
+              // Disables click, no more hover effect, cursor becomes default
+              cellEl.style.pointerEvents = 'none';
             }
-            if (board[row][col].getValue() === 'O') {
-              cellEl.classList.add('player-2');
-              cellEl.disabled = true;
+            if (marker === 'O') {
+              markerEl.src = oIcon;
+              // Disables click, no more hover effect, cursor becomes default
+              cellEl.style.pointerEvents = 'none';
             }
             boardEl.appendChild(cellEl);
           }
@@ -53,6 +62,7 @@ const ScreenController = async () => {
       async function clickHandlerBoard(e) {
         // Error handling for is the game previously created is already handled.
         if (game === null) return;
+        updateScreen();
 
         const row = e.target.dataset.row;
         const col = e.target.dataset.col;
@@ -82,15 +92,14 @@ const ScreenController = async () => {
           }
         }
       }
-      boardEl.addEventListener('click', clickHandlerBoard);
-
       updateScreen();
+      boardEl.addEventListener('click', clickHandlerBoard);
     });
   };
 
   const playMultipleGames = (numGames, players) => {
     let gameIndex = 0;
-    updateScoresDisplay();
+    // updateScoresDisplay();
 
     const playNextGame = (startPlayerIndex) => {
       return playGame(players, startPlayerIndex).then(async (winnerIndex) => {
@@ -105,7 +114,7 @@ const ScreenController = async () => {
         } else {
           gameMsgEl.innerText = 'Tie!';
         }
-        
+
         gameMsgEl.showModal();
         setTimeout(() => {
           gameMsgEl.close();
@@ -123,7 +132,7 @@ const ScreenController = async () => {
             gameOverModal.close();
             // game();
             window.location.reload();
-          })
+          });
           return scores;
         }
 
@@ -138,44 +147,31 @@ const ScreenController = async () => {
     return playNextGame(0);
   };
 
+  const initScoresDisplay = () => {
+    const player1NameEl = document.querySelector('#player1-name');
+    player1NameEl.innerText = players[0].name;
+    const player2NameEl = document.querySelector('#player2-name');
+    player2NameEl.innerText = players[1].name;
+
+    const player1TypeEl = document.querySelector('#player1-type');
+    player1TypeEl.innerText = players[0].type;
+    const player2TypeEl = document.querySelector('#player2-type');
+    player2TypeEl.innerText = players[1].type;
+
+    const player1MarkerEl = document.querySelector('#player1-marker');
+    player1MarkerEl.src = players[0].marker === 'X' ? xIcon : oIcon;
+
+    const player2MarkerEl = document.querySelector('#player2-marker');
+    player2MarkerEl.src = players[1].marker === 'X' ? xIcon : oIcon;
+  };
+
   const updateScoresDisplay = () => {
-    resultsEl.innerHTML = '';
-
-    resultsEl.appendChild(
-      createElement('div', ['results-heading'], {}, players[0].name)
-    );
-    resultsEl.appendChild(createElement('div', ['results-heading'], {}, 'Tie'));
-    resultsEl.appendChild(
-      createElement('div', ['results-heading'], {}, players[1].name)
-    );
-
-    resultsEl.appendChild(
-      createElement(
-        'div',
-        ['results-heading'],
-        {},
-        players[0].type + ' ' + players[0].marker
-      )
-    );
-    resultsEl.appendChild(createElement('div', [], {}, ''));
-    resultsEl.appendChild(
-      createElement(
-        'div',
-        ['results-heading'],
-        {},
-        players[1].type + ' ' + players[1].marker
-      )
-    );
-
-    resultsEl.appendChild(
-      createElement('div', ['results-score'], {}, scores[0])
-    );
-    resultsEl.appendChild(
-      createElement('div', ['results-score'], {}, scores[2])
-    );
-    resultsEl.appendChild(
-      createElement('div', ['results-score'], {}, scores[1])
-    );
+    const player1ScoreEl = document.querySelector('#player1-score');
+    player1ScoreEl.innerHTML = scores[0];
+    const player2ScoreEl = document.querySelector('#player2-score');
+    player2ScoreEl.innerHTML = scores[1];
+    const boardFootEl = document.querySelector('.board-foot');
+    boardFootEl.innerHTML = 'Ties: ' + scores[2];
   };
 
   // Game setup modal
@@ -201,6 +197,8 @@ const ScreenController = async () => {
     players = playersObj.getPlayers();
     numGames = document.querySelector('#number-of-games').value;
     gameSetupModal.close();
+
+    initScoresDisplay();
 
     playMultipleGames(numGames, players);
   });

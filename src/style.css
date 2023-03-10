@@ -6,14 +6,75 @@
   /* border: 1px solid red; */
 }
 
-.container {
-  width: 100vw;
-  height: 95vh;
+body {
+  height: 100vh;
   display: flex;
-  gap: 50px;
+  background: #888;
   flex-direction: column;
-  /* justify-content: space-around; */
+  justify-content: space-between;
   align-items: center;
+}
+
+.board-container {
+  width: 1200px;
+  height: 675px;
+  display: flex;
+  background-image: url("images/tic-tact-toe-board\ Medium.jpeg");
+  background-size: cover;
+  flex-direction: column;
+  align-items: center;
+}
+
+.board-head {
+  flex: 1;
+  color: lightblue;
+  text-align: center;
+  font-size: 1.5rem;
+
+}
+
+.play-area {
+  flex: 90;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* border: 1px solid red; */
+}
+
+.player-container {
+  /* width: 20%; */
+  flex: 1;
+  height: 60%;
+  /* border: 1px solid red; */
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  color: white;
+  margin: 30px;
+  box-shadow: 0px 0px 5px white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
+.player-container.turn{
+  box-shadow: 0px 0px 20px yellow;
+}
+
+.player-id {
+  font-size: 1.5rem;
+  font-weight: bolder;
+}
+.player-name {
+  font-size: 1.5rem;
+}
+.player-type {
+  font-size: 1.5rem;
+}
+.player-score {
+  font-size: 1.5rem;
+}
+.player-marker img {
+  width: 100px;
 }
 
 h1 {
@@ -22,63 +83,44 @@ h1 {
 }
 
 .board {
+  /* width: 60%; */
+  flex: 3;
+  height: 90%;
   display: grid;
-  height: 450px;
-  width: 450px;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  border: 5px solid black;
-  background-color: yellow;
+  grid-template-columns: 0.9fr 1.2fr 1fr;
+  grid-template-rows: 0.9fr 0.8fr 1fr;
+  gap: 50px;
+  /* border: 1px solid red; */
 }
 
 .cell {
+  width: 100%;
+  height: 100%;
+  background-size:cover;
+  background: center center;
   display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
-  font-size: 5rem;
   border: 1px solid purple;
-  color: blue;
-  background: blue;
+  /* color: blue; */
   cursor: pointer;
 }
 
-.player-1 {
-  color: black;
-  background: red;
-  border: 1px solid black;
-  cursor: default;
+.cell:hover {
+  cursor: pointer;
+  background: #333;
 }
 
-.player-2 {
-  color: black;
-  background: green;
-  border: 1px solid black;
-  cursor: default;
+.piece{
+  /* background: blue; */
+  width: 60%;
 }
 
-.results {
-  display: grid;
-  height: 150px;
-  width: 500px;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  border: 5px solid black;
-  gap: 10px;
-  padding: 20px;
-  background-color: yellow;
-}
-
-.results-heading {
-  font-weight: bold;
+.board-foot {
+  flex: 1;
+  color: white;
   text-align: center;
-  border: 1px solid black;
 }
-.results-score {
-  text-align: center;
-  border: 1px solid black;
-}
-
 
 .game-setup-modal {
   /* position: absolute; */
