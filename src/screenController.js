@@ -1,6 +1,7 @@
 import './style.css';
 import GameController from './gameController';
 import delay from './delay';
+import createElement from './createElement';
 
 // The ScreenController that presents a view and gets user requests
 const ScreenController = async (numGames, players) => {
@@ -123,38 +124,21 @@ const ScreenController = async (numGames, players) => {
   };
 
   const updateScoresDisplay = () => {
-
     resultsEl.innerHTML = '';
 
-    const player1El = document.createElement('div');
-    player1El.classList.add('results-heading');
-    player1El.innerText = players[0].type;
-    resultsEl.appendChild(player1El);
+    resultsEl.appendChild(
+      createElement('div', ['results-heading'], {}, players[0].type)
+    );
+    resultsEl.appendChild(createElement('div', ['results-heading'], {}, 'Tie'));
+    resultsEl.appendChild(
+      createElement('div', ['results-heading'], {}, players[1].type)
+    );
 
-    const tieEl = document.createElement('div');
-    tieEl.classList.add('results-heading');
-    tieEl.innerText = 'Tie';
-    resultsEl.appendChild(tieEl);
-
-    const player2El = document.createElement('div');
-    player2El.classList.add('results-heading');
-    player2El.innerText = players[1].type;
-    resultsEl.appendChild(player2El);
-
-    const player1ScoreEl = document.createElement('div');
-    player1ScoreEl.classList.add('results-score');
-    player1ScoreEl.innerText = scores[0];
-    resultsEl.appendChild(player1ScoreEl);
-
-    const tieScoreEl = document.createElement('div');
-    tieScoreEl.classList.add('results-score');
-    tieScoreEl.innerText = scores[2];
-    resultsEl.appendChild(tieScoreEl);
-
-    const player2ScoreEl = document.createElement('div');
-    player2ScoreEl.classList.add('results-score');
-    player2ScoreEl.innerText = scores[1];
-    resultsEl.appendChild(player2ScoreEl);
+    for (let i = 0; i < scores.length; i++) {
+      resultsEl.appendChild(
+        createElement('div', ['results-score'], {}, scores[i])
+      );
+    }
   };
 
   playMultipleGames(numGames, players);
