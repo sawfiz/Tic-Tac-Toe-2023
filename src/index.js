@@ -8,7 +8,7 @@ const players = Players();
 // Number of games to play
 
 players.setPlayers([
-  { name: 'playerOneName', marker: 'X', type: 'ai' },
+  { name: 'playerOneName', marker: 'X', type: 'human' },
   { name: 'playerTwoName', marker: 'O', type: 'human' },
 ]);
 

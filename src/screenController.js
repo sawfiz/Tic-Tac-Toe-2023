@@ -4,9 +4,10 @@ import delay from './delay';
 
 // The ScreenController that presents a view and gets user requests
 const ScreenController = async (numGames, players) => {
-  let gamePlayed = 0;
   let winnerIndex = 1;
-  let score = [0, 0, 0]; // Scores for player 1, player 2, tie
+  let scores = [0, 0, 0]; // Scores for player 1, player 2, tie
+  const boardEl = document.querySelector('.board');
+  const resultsEl = document.querySelector('.results');
 
   const playGame = (players, startPlayerIndex) => {
     console.log(
@@ -16,8 +17,6 @@ const ScreenController = async (numGames, players) => {
     let game = GameController(players, startPlayerIndex);
 
     return new Promise((resolve) => {
-      const boardEl = document.querySelector('.board');
-
       // Redraws the game board in the web page
       const updateScreen = () => {
         boardEl.innerHTML = '';
@@ -69,14 +68,12 @@ const ScreenController = async (numGames, players) => {
         if (result) {
           game.resetBoard();
           if (result === 'tie') {
-            score[2]++;
             // Terminate this game.  This causes some issues with Promise
             // Error message in console. But the game runs fine.
             game = null;
-            resolve(2);  // Index of Tie is Scores is 2
+            resolve(2); // Index of Tie is Scores is 2
           } else {
             winnerIndex = players.indexOf(game.getActivePlayer());
-            score[winnerIndex] = score[winnerIndex] + 1;
             // Terminate this game.  This causes some issues with Promise
             // Error message in console. But the game runs fine.
             game = null;
@@ -92,24 +89,25 @@ const ScreenController = async (numGames, players) => {
 
   const playMultipleGames = (numGames, players) => {
     let gameIndex = 0;
-    let scores = [0, 0, 0];
+    updateScoresDisplay();
 
     const playNextGame = (startPlayerIndex) => {
       return playGame(players, startPlayerIndex).then(async (winnerIndex) => {
         // update the scores
         scores[winnerIndex] += 1;
+        updateScoresDisplay();
 
         // display result of each game
         await delay(100);
         if (winnerIndex < 2) {
-          alert(`${players[winnerIndex].type} wins! ` + scores);
+          alert(`${players[winnerIndex].type} wins!`);
         } else {
-          alert('Tie!' + ' ' + scores);
+          alert('Tie!');
         }
 
         // check if all games have been played
         if (gameIndex >= numGames - 1) {
-          alert('Game Over! ' + scores);
+          alert('Game Over!');
           return scores;
         }
 
@@ -122,6 +120,41 @@ const ScreenController = async (numGames, players) => {
 
     // start the first game
     return playNextGame(0);
+  };
+
+  const updateScoresDisplay = () => {
+
+    resultsEl.innerHTML = '';
+
+    const player1El = document.createElement('div');
+    player1El.classList.add('results-heading');
+    player1El.innerText = players[0].type;
+    resultsEl.appendChild(player1El);
+
+    const tieEl = document.createElement('div');
+    tieEl.classList.add('results-heading');
+    tieEl.innerText = 'Tie';
+    resultsEl.appendChild(tieEl);
+
+    const player2El = document.createElement('div');
+    player2El.classList.add('results-heading');
+    player2El.innerText = players[1].type;
+    resultsEl.appendChild(player2El);
+
+    const player1ScoreEl = document.createElement('div');
+    player1ScoreEl.classList.add('results-score');
+    player1ScoreEl.innerText = scores[0];
+    resultsEl.appendChild(player1ScoreEl);
+
+    const tieScoreEl = document.createElement('div');
+    tieScoreEl.classList.add('results-score');
+    tieScoreEl.innerText = scores[2];
+    resultsEl.appendChild(tieScoreEl);
+
+    const player2ScoreEl = document.createElement('div');
+    player2ScoreEl.classList.add('results-score');
+    player2ScoreEl.innerText = scores[1];
+    resultsEl.appendChild(player2ScoreEl);
   };
 
   playMultipleGames(numGames, players);
