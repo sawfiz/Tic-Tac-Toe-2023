@@ -2,19 +2,19 @@ import './style.css';
 import GameController from './gameController';
 import delay from './delay';
 import createElement from './createElement';
+import { Players } from './players';
 
 // The ScreenController that presents a view and gets user requests
-const ScreenController = async (numGames, players) => {
+const ScreenController = async () => {
+  const playersObj = Players();
+  let players;
+  let numGames;
   let winnerIndex = 1;
   let scores = [0, 0, 0]; // Scores for player 1, player 2, tie
   const boardEl = document.querySelector('.board');
   const resultsEl = document.querySelector('.results');
 
   const playGame = (players, startPlayerIndex) => {
-    console.log(
-      '🚀 ~ file: screenController.js:11 ~ playGame ~ startPlayerIndex:',
-      startPlayerIndex
-    );
     let game = GameController(players, startPlayerIndex);
 
     return new Promise((resolve) => {
@@ -163,7 +163,32 @@ const ScreenController = async (numGames, players) => {
     );
   };
 
-  playMultipleGames(numGames, players);
+  // Game setup modal
+  const gameSetupModal = document.querySelector('.game-setup-modal');
+  const startBtn = document.querySelector('#start-game');
+
+  gameSetupModal.showModal();
+  startBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    playersObj.setPlayers([
+      {
+        name: document.querySelector('#player1-name-input').value,
+        marker: 'X',
+        type: 'human',
+      },
+      {
+        name: document.querySelector('#player2-name-input').value,
+        marker: 'O',
+        type: document.querySelector('#player2-type-input').value,
+      },
+    ]);
+    players = playersObj.getPlayers();
+    numGames = document.querySelector('#number-of-games').value;
+    gameSetupModal.close();
+
+    playMultipleGames(numGames, players);
+  });
 };
 
 export default ScreenController;

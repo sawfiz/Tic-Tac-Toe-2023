@@ -15,6 +15,35 @@
     <div class="board" id="board"></div>
     <div class="results" ></div>
   </div>
+
+  <dialog class="game-setup-modal">
+    <div class="game-setup">
+        <form action="">
+            <fieldset>
+                <legend>Game setup</legend>
+                <h3>Player 1</h3>
+                <label for="player1-name">Name</label>
+                <input type="text" name="player1-name" id="player1-name-input" value="Tom">
+                <p>Type: human</p>
+                <br>
+                <h3>Player 2</h3>
+                <label for="player2-name">Name</label>
+                <input type="text" name="player2-name" id="player2-name-input" value="Jerry">
+                <label for="player2-type">Type</label>
+                <select name="player2-type" id="player2-type-input">
+                    <option value="ai">computer hard</option>
+                    <option value="random">computer easy</option>
+                    <option value="human">human</option>
+                </select>
+                <br>
+                <label for="number-of-games">Number of games</label>
+                <input type="number" name="number-of-games" id="number-of-games" min="5" max="10" value="3">
+                <br>
+            </fieldset>
+            <button type="submit" id="start-game">Start Game</button>
+        </form>
+    </div>
+</dialog>
 </body>
 
 </html>
