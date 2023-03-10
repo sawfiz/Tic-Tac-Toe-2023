@@ -27,9 +27,9 @@ const ScreenController = async () => {
         for (let row = 0; row < board.length; row++) {
           for (let col = 0; col < board.length; col++) {
             // Creates each cell element
-            const cellEl = document.createElement('button');
+            const cellEl = document.createElement('div');
             cellEl.classList.add('cell');
-            cellEl.textContent = board[row][col].getValue();
+            // cellEl.textContent = board[row][col].getValue();
 
             // Add data attributes to the cell elements that can be accessed by event handler
             cellEl.dataset.row = row;
