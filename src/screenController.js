@@ -57,12 +57,28 @@ const ScreenController = async () => {
         }
       };
 
+      const highlightActivePlayer = () => {
+        const activePlayerIndex = players.indexOf(game.getActivePlayer());
+        console.log(
+          '🚀 ~ file: screenController.js:180 ~ highlightActivePlayer ~ activePlayerIndex:',
+          activePlayerIndex
+        );
+        const player1ContainerEl = document.querySelector('#player1-container');
+        const player2ContainerEl = document.querySelector('#player2-container');
+        if (activePlayerIndex === 0) {
+          player1ContainerEl.classList.add('turn');
+          player2ContainerEl.classList.remove('turn');
+        } else {
+          player1ContainerEl.classList.remove('turn');
+          player2ContainerEl.classList.add('turn');
+        }
+      };
+
       // Handles clicks on the board
       // Needs to be ayncs to use the delay function to delay the alerts
       async function clickHandlerBoard(e) {
         // Error handling for is the game previously created is already handled.
         if (game === null) return;
-        updateScreen();
 
         const row = e.target.dataset.row;
         const col = e.target.dataset.col;
@@ -76,6 +92,7 @@ const ScreenController = async () => {
         // Play a valid move
         result = game.playRound(row, col);
         updateScreen();
+        highlightActivePlayer();
         if (result) {
           game.resetBoard();
           if (result === 'tie') {
@@ -92,7 +109,9 @@ const ScreenController = async () => {
           }
         }
       }
+
       updateScreen();
+      highlightActivePlayer();
       boardEl.addEventListener('click', clickHandlerBoard);
     });
   };
