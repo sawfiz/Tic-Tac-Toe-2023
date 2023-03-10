@@ -101,7 +101,7 @@ const ScreenController = async (numGames, players) => {
         // display result of each game
         await delay(100);
         if (winnerIndex < 2) {
-          alert(`${players[winnerIndex].type} wins!`);
+          alert(`${players[winnerIndex].name} wins!`);
         } else {
           alert('Tie!');
         }
@@ -127,18 +127,40 @@ const ScreenController = async (numGames, players) => {
     resultsEl.innerHTML = '';
 
     resultsEl.appendChild(
-      createElement('div', ['results-heading'], {}, players[0].type)
+      createElement('div', ['results-heading'], {}, players[0].name)
     );
     resultsEl.appendChild(createElement('div', ['results-heading'], {}, 'Tie'));
     resultsEl.appendChild(
-      createElement('div', ['results-heading'], {}, players[1].type)
+      createElement('div', ['results-heading'], {}, players[1].name)
     );
 
-    for (let i = 0; i < scores.length; i++) {
-      resultsEl.appendChild(
-        createElement('div', ['results-score'], {}, scores[i])
-      );
-    }
+    resultsEl.appendChild(
+      createElement(
+        'div',
+        ['results-heading'],
+        {},
+        players[0].type + ' ' + players[0].marker
+      )
+    );
+    resultsEl.appendChild(createElement('div', [], {}, ''));
+    resultsEl.appendChild(
+      createElement(
+        'div',
+        ['results-heading'],
+        {},
+        players[1].type + ' ' + players[1].marker
+      )
+    );
+
+    resultsEl.appendChild(
+      createElement('div', ['results-score'], {}, scores[0])
+    );
+    resultsEl.appendChild(
+      createElement('div', ['results-score'], {}, scores[2])
+    );
+    resultsEl.appendChild(
+      createElement('div', ['results-score'], {}, scores[1])
+    );
   };
 
   playMultipleGames(numGames, players);
