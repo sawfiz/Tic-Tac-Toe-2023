@@ -97,14 +97,20 @@ const ScreenController = async () => {
         // update the scores
         scores[winnerIndex] += 1;
         updateScoresDisplay();
+        const gameMsgEl = document.querySelector('.game-message');
 
         // display result of each game
-        await delay(100);
         if (winnerIndex < 2) {
-          alert(`${players[winnerIndex].name} wins!`);
+          gameMsgEl.innerText = `${players[winnerIndex].name} wins!`;
         } else {
-          alert('Tie!');
+          gameMsgEl.innerText = 'Tie!';
         }
+        
+        gameMsgEl.showModal();
+        setTimeout(() => {
+          gameMsgEl.close();
+        }, 1000);
+        await delay(1000);
 
         // check if all games have been played
         if (gameIndex >= numGames - 1) {
